@@ -3,6 +3,7 @@ PATH
   specs:
     rtorrent_xmlrpc (0.1)
       colorize (~> 0.7, >= 0.7.7)
+      filesize (~> 0.1, >= 0.1.0)
       hashie (~> 3.4, >= 3.4.2)
       thor (~> 0.19, >= 0.19.1)
 
@@ -10,6 +11,7 @@ GEM
   remote: https://rubygems.org/
   specs:
     colorize (0.7.7)
+    filesize (0.1.0)
     hashie (3.4.2)
     rake (10.4.2)
     thor (0.19.1)
