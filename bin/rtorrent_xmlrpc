@@ -59,7 +59,7 @@ class RTorrent_XMLRPC < Thor
 
   desc "complete", "Print all torrents that are complete."
   def complete
-    self.print @xmlrpc.completed
+    self.print @xmlrpc.torrents.completed
   end
 
   desc "incomplete", "Print all incomplete torrents."
@@ -69,7 +69,7 @@ class RTorrent_XMLRPC < Thor
 
   desc "labeled LABEL", "Print all torrents with label"
   def labeled(label)
-    self.print @xmlrpc.with_label label
+    self.print @xmlrpc.torrents.with_label label
   end
 
   desc "files HASH", "Print the torrent information with files."

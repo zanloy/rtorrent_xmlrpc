@@ -1,5 +1,6 @@
 require 'hashie'
 require 'rtorrent_xmlrpc/torrent'
+require 'rtorrent_xmlrpc/torrents'
 require 'xmlrpc/client'
 
 module RTorrent
@@ -22,7 +23,7 @@ module RTorrent
       self.password = password
       self.path = path
       self.use_ssl = use_ssl
-      @torrents = []
+      @torrents = Torrents.new
       @status = :initialized
     end
 
@@ -59,10 +60,7 @@ module RTorrent
     # Grab list of torrents from server
     def fetch_torrents
       self.connect unless @status == :connected
-      @torrents = []
-      #@server.call('d.multicall', 'main', 'd.hash=').each do |result|
-      #  @torrents << RTorrent::Torrent.new(@server, result.first)
-      #end
+      @torrents = Torrents.new
       args = [
         'd.multicall',
         'main',
@@ -115,26 +113,6 @@ module RTorrent
       @server.call('d.stop', hash)
     end
 
-    # Get a list of completed torrents
-    def completed
-      result = []
-      @torrents.each { |torrent| result << torrent if torrent.completed }
-      return result
-    end
-
-    # Get a list of incomplete torrents
-    def incomplete
-      result = []
-      @torrents.each { |torrent| result << torrent unless torrent.completed }
-      return result
-    end
-
-    # Get a list of torrents with label
-    def with_label(label)
-      result = []
-      @torrents.each { |torrent| result << torrent if torrent.has_label? label }
-      return result
-    end
   end
 
 end

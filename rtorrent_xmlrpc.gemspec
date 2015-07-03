@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name        = 'rtorrent_xmlrpc'
-  s.version     = '0.2.0'
+  s.version     = '0.2.1'
   s.date        = '2015-07-03'
   s.summary     = 'A library and tool to query an rtorrent xmlrpc service.'
   s.description = 'This is a library to get torrent information from a remote rtorrent server.'

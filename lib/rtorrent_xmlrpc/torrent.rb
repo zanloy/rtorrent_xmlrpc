@@ -16,6 +16,10 @@ module RTorrent
     attr_accessor :base_filename, :base_path, :completed, :files, :hash, :is_multi_file, :name, :tied_to_file
     attr_reader :down_total, :labels, :priority, :ratio, :size, :up_total
 
+    def completed?
+      self.completed
+    end
+
     def down_total=(down_total) # :nodoc:
       @down_total = Filesize.new(down_total)
     end
