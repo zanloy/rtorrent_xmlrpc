@@ -1,10 +1,13 @@
 #!/usr/bin/env ruby
 
 require 'hashie'
+require 'json'
 require 'rtorrent_xmlrpc'
 require 'thor'
 
 class RTorrent_XMLRPC < Thor
+
+  class_option '--json', type: :boolean
 
   def initialize(*args)
     super
@@ -26,7 +29,11 @@ class RTorrent_XMLRPC < Thor
 
   no_tasks do
     def print(torrents)
-      torrents.each { |torrent| torrent.pp }
+      if options[:json]
+        puts torrents.to_json
+      else
+        torrents.each { |torrent| torrent.pp }
+      end
     end
   end
 

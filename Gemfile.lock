@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    rtorrent_xmlrpc (0.1.1)
+    rtorrent_xmlrpc (0.2.0)
       colorize (~> 0.7, >= 0.7.7)
       filesize (~> 0.1, >= 0.1.0)
       hashie (~> 3.4, >= 3.4.2)

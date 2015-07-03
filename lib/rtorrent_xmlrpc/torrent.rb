@@ -1,5 +1,6 @@
 require 'colorize'
 require 'filesize'
+require 'json'
 require 'xmlrpc/client'
 
 module RTorrent
@@ -74,6 +75,7 @@ module RTorrent
         base_filename: @base_filename,
         base_path: @base_path,
         completed: @completed,
+        files: @files,
         hash: @hash,
         is_multi_file: @is_multi_file,
         labels: @labels,
@@ -85,14 +87,9 @@ module RTorrent
       }
     end
 
-    # Single line header
-    def self.header
-      "hash : name : size : down : up : ratio : labels"
-    end
-
-    # All torrent data in a single string for output to screen
+    # Convert object to string as json
     def to_s
-      "#{self.hash} : #{self.name} : #{self.size.pretty} : #{self.down_total.pretty} : #{self.up_total.pretty} : #{self.ratio} : #{self.labels_str}"
+      self.to_h.to_json
     end
 
     # All torrent data dumped to screen in color
