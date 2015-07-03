@@ -1,0 +1,9 @@
+---
+host: 'example.com'
+port: 443
+use_ssl: true
+path: '/xmlrpc'
+user: 'user'
+password: 'P@$$w0rd'
+
+# vim: filetype=yaml

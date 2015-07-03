@@ -1,0 +1,70 @@
+#!/usr/bin/env ruby
+
+require 'hashie'
+require 'rtorrent_xmlrpc'
+require 'thor'
+
+class RTorrent_XMLRPC < Thor
+
+  def initialize(*args)
+    super
+    # Read in config file
+    config_file = nil
+    %W[rtorrent_xmlrpc.conf #{Dir.home}/.config/rtorrent_xmlrpc.conf #{Dir.home}/.rtorrent_xmlrpc.conf /etc/rtorrent_xmlrpc.conf].each do |f|
+      if File.exists?(f)
+        config_file = f
+        break
+      end
+    end
+    raise 'No config file found.' if config_file.nil?
+    config = Hashie::Mash.load(config_file)
+    # Connect to xmlrpc service
+    @xmlrpc = RTorrent::XMLRPC.new( host: config.host, port: config.port, path: config.path, user: config.user, password: config.password, use_ssl: config.use_ssl)
+    @xmlrpc.connect
+    @xmlrpc.fetch_torrents
+  end
+
+  no_tasks do
+    def print(torrents)
+      torrents.each { |torrent| torrent.pp }
+    end
+  end
+
+  desc "list", "Pretty print all the torrents on the server."
+  def list
+    self.print @xmlrpc.torrents
+  end
+
+  desc "start HASH", "Start torrent with HASH"
+  def start(hash)
+    @xmlrpc.start hash
+  end
+
+  desc "stop HASH", "Stop torrent with HASH"
+  def stop(hash)
+    @xmlrpc.stop hash
+  end
+
+  desc "pause HASH", "Pause torrent with HASH"
+  def pause(hash)
+    @xmlrpc.pause hash
+  end
+
+  desc "complete", "Print all torrents that are complete."
+  def complete
+    self.print @xmlrpc.completed
+  end
+
+  desc "incomplete", "Print all incomplete torrents."
+  def incomplete
+    self.print @xmlrpc.incomplete
+  end
+
+  desc "labeled LABEL", "Print all torrents with label"
+  def labeled(label)
+    self.print @xmlrpc.with_label label
+  end
+
+end
+
+RTorrent_XMLRPC.start(ARGV)
