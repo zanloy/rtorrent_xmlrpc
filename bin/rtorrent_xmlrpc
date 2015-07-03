@@ -19,7 +19,7 @@ class RTorrent_XMLRPC < Thor
     raise 'No config file found.' if config_file.nil?
     config = Hashie::Mash.load(config_file)
     # Connect to xmlrpc service
-    @xmlrpc = RTorrent::XMLRPC.new( host: config.host, port: config.port, path: config.path, user: config.user, password: config.password, use_ssl: config.use_ssl)
+    @xmlrpc = RTorrent::XMLRPC.new_from_hash(config.to_h)
     @xmlrpc.connect
     @xmlrpc.fetch_torrents
   end
@@ -65,6 +65,10 @@ class RTorrent_XMLRPC < Thor
     self.print @xmlrpc.with_label label
   end
 
+  desc "files HASH", "Print the torrent information with files."
+  def files(hash)
+    # TODO:
+  end
 end
 
 RTorrent_XMLRPC.start(ARGV)
