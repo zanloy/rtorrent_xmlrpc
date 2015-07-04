@@ -1,4 +1,3 @@
-require 'hashie'
 require 'rtorrent_xmlrpc/torrent'
 require 'rtorrent_xmlrpc/torrents'
 require 'xmlrpc/client'
@@ -6,8 +5,8 @@ require 'xmlrpc/client'
 module RTorrent
 
   class XMLRPC
-    attr_accessor :host, :user, :password, :path
-    attr_reader :port, :use_ssl, :server, :torrents
+    attr_accessor :host, :user, :password, :path, :port
+    attr_reader :connection_options, :use_ssl, :server, :torrents
 
     def initialize(host: 'localhost', port: nil, user: nil, password: nil, path: '/xmlrpc', use_ssl: false)
       unless port
@@ -25,6 +24,8 @@ module RTorrent
       self.use_ssl = use_ssl
       @torrents = Torrents.new
       @status = :initialized
+      connect
+      fetch_torrents
     end
 
     def self.new_from_hash(hash = {})
@@ -33,18 +34,14 @@ module RTorrent
       self.new(host: h[:host], port: h[:port], user: h[:user], password: h[:password], path: h[:path], use_ssl: h[:use_ssl])
     end
 
-    def port=(port)
-      fail unless port.is_a? Integer
-      @port = port
-    end
-
     def use_ssl=(use_ssl)
-      fail unless use_ssl.is_a?(TrueClass) || use_ssl.is_a?(FalseClass)
+      fail "use_ssl must be a boolean value" unless use_ssl.is_a?(TrueClass) || use_ssl.is_a?(FalseClass)
       @use_ssl = use_ssl
     end
 
     # Connect to rtorrent xmlrpc service
     def connect
+      return true if @status == :connected
       connection_options = {
         host: @host,
         port: @port,
@@ -55,6 +52,12 @@ module RTorrent
       }
       @server = ::XMLRPC::Client.new3(connection_options)
       @status = :connected
+    end
+
+    # Disconnect from xmlrpc service
+    def disconnect
+      @server = nil
+      @status = :disconnected
     end
 
     # Grab list of torrents from server
@@ -94,7 +97,7 @@ module RTorrent
         torrent.ratio = stats[11].to_f / 1000
         torrent.priority = stats[12]
         torrent.files = @server.call('f.multicall', torrent.hash, '', 'f.get_path=').flatten
-        @torrents << torrent
+        @torrents[torrent.hash] = torrent
       end
     end
 
@@ -117,7 +120,7 @@ module RTorrent
     def set_labels(hash, labels)
       labels = [labels] unless labels.is_a? Array
       @server.call('d.set_custom1', hash, labels.join(', '))
-      self.torrents.each { |torrent| torrent.labels = labels if torrent.hash = hash }
+      self.torrents[hash].labels = labels
     end
   end
 

@@ -21,8 +21,6 @@ class RTorrent_XMLRPC < Thor
     config = Hashie::Mash.load(config_file)
     # Connect to xmlrpc service
     @xmlrpc = RTorrent::XMLRPC.new_from_hash(config.to_h)
-    @xmlrpc.connect
-    @xmlrpc.fetch_torrents
   end
 
   desc "print", "Print the torrent information"
@@ -39,7 +37,7 @@ class RTorrent_XMLRPC < Thor
     if options[:json]
       puts torrents.to_json
     else
-      torrents.each { |torrent| torrent.pp(options[:files]) }
+      torrents.each { |hash, torrent| torrent.pp(options[:files]) }
     end
   end
 
@@ -56,6 +54,11 @@ class RTorrent_XMLRPC < Thor
   desc "pause HASH", "Pause torrent with HASH"
   def pause(hash)
     @xmlrpc.pause hash
+  end
+
+  desc "label HASH LABEL", "Label the torrent identified by HASH with LABEL"
+  def label(hash, label)
+    @xmlrpc.set_labels(hash, label)
   end
 
 end

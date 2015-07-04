@@ -21,7 +21,8 @@ module RTorrent
     end
 
     def labels=(labels) # :nodoc:
-      @labels = labels.split(',')
+      labels = labels.split(',') if labels.is_a? String
+      @labels = labels
       @labels.map! { |label| label.chomp }
     end
 
