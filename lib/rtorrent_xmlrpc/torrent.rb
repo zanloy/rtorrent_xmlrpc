@@ -20,10 +20,21 @@ module RTorrent
       self.completed
     end
 
+    def add_labels(labels)
+      labels = [labels] if labels.is_a? String
+      self.labels = (@labels + labels).uniq
+    end
+
+    def remove_labels(labels)
+      labels = [labels] if labels.is_a? String
+      self.labels = @labels - labels
+    end
+
     def labels=(labels) # :nodoc:
       labels = labels.split(',') if labels.is_a? String
       @labels = labels
-      @labels.map! { |label| label.chomp }
+      # Remove extra whitespace from labels
+      @labels.map!(&:strip)
     end
 
     def labels_str

@@ -116,6 +116,18 @@ module RTorrent
       @server.call('d.stop', hash)
     end
 
+    # Add labels to torrent
+    def add_labels(hash, labels)
+      self.torrents[hash].add_labels(labels)
+      @server.call('d.set_custom1', hash, self.torrents[hash].labels_str)
+    end
+
+    # Remove labels from torrent
+    def remove_labels(hash, labels)
+      self.torrents[hash].remove_labels(labels)
+      @server.call('d.set_custom1', hash, self.torrents[hash].labels_str)
+    end
+
     # Set the custom1 (label) field for a torrent
     def set_labels(hash, labels)
       labels = [labels] unless labels.is_a? Array

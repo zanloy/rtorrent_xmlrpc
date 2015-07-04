@@ -56,9 +56,19 @@ class RTorrent_XMLRPC < Thor
     @xmlrpc.pause hash
   end
 
-  desc "label HASH LABEL", "Label the torrent identified by HASH with LABEL"
-  def label(hash, label)
-    @xmlrpc.set_labels(hash, label)
+  desc "add_labels HASH LABELS", "Add labels to torrent identified by HASH"
+  def add_labels(hash, *labels)
+    @xmlrpc.add_labels(hash, labels)
+  end
+
+  desc "remove_labels HASH LABELS", "Remove labels from torrent identified by HASH"
+  def remove_labels(hash, *labels)
+    @xmlrpc.remove_labels(hash, labels)
+  end
+
+  desc "set_labels HASH LABELS", "Label the torrent identified by HASH with LABELS"
+  def set_labels(hash, *labels)
+    @xmlrpc.set_labels(hash, labels)
   end
 
 end
