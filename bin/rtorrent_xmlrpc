@@ -7,8 +7,6 @@ require 'thor'
 
 class RTorrent_XMLRPC < Thor
 
-  class_option '--json', type: :boolean
-
   def initialize(*args)
     super
     # Read in config file
@@ -27,19 +25,22 @@ class RTorrent_XMLRPC < Thor
     @xmlrpc.fetch_torrents
   end
 
-  no_tasks do
-    def print(torrents)
-      if options[:json]
-        puts torrents.to_json
-      else
-        torrents.each { |torrent| torrent.pp }
-      end
+  desc "print", "Print the torrent information"
+  option :complete, aliases: '-c', type: :boolean
+  option :files, aliases: '-f', type: :boolean
+  option :incomplete, aliases: '-i', type: :boolean
+  option :json, aliases: '-j', type: :boolean
+  option :label, aliases: '-l', type: :string
+  def print
+    torrents = @xmlrpc.torrents
+    torrents = torrents.complete if options[:complete]
+    torrents = torrents.incomplete if options[:incomplete]
+    torrents = torrents.with_label options[:label] if options[:label]
+    if options[:json]
+      puts torrents.to_json
+    else
+      torrents.each { |torrent| torrent.pp(options[:files]) }
     end
-  end
-
-  desc "list", "Pretty print all the torrents on the server."
-  def list
-    self.print @xmlrpc.torrents
   end
 
   desc "start HASH", "Start torrent with HASH"
@@ -57,25 +58,6 @@ class RTorrent_XMLRPC < Thor
     @xmlrpc.pause hash
   end
 
-  desc "complete", "Print all torrents that are complete."
-  def complete
-    self.print @xmlrpc.torrents.completed
-  end
-
-  desc "incomplete", "Print all incomplete torrents."
-  def incomplete
-    self.print @xmlrpc.incomplete
-  end
-
-  desc "labeled LABEL", "Print all torrents with label"
-  def labeled(label)
-    self.print @xmlrpc.torrents.with_label label
-  end
-
-  desc "files HASH", "Print the torrent information with files."
-  def files(hash)
-    # TODO:
-  end
 end
 
 RTorrent_XMLRPC.start(ARGV)

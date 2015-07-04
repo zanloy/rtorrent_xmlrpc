@@ -113,6 +113,12 @@ module RTorrent
       @server.call('d.stop', hash)
     end
 
+    # Set the custom1 (label) field for a torrent
+    def set_labels(hash, labels)
+      labels = [labels] unless labels.is_a? Array
+      @server.call('d.set_custom1', hash, labels.join(', '))
+      self.torrents.each { |torrent| torrent.labels = labels if torrent.hash = hash }
+    end
   end
 
 end
