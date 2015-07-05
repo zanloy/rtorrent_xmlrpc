@@ -1,7 +1,7 @@
 Gem::Specification.new do |s|
   s.name        = 'rtorrent_xmlrpc'
   s.version     = '0.2.3'
-  s.date        = '2015-07-03'
+  s.date        = '2015-07-04'
   s.summary     = 'A library and tool to query an rtorrent xmlrpc service.'
   s.description = 'This is a library to get torrent information from a remote rtorrent server.'
   s.authors     = ['Zan Loy']
@@ -16,4 +16,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'filesize', '~> 0.1', '>= 0.1.0'
   s.add_dependency 'thor', '~> 0.19', '>= 0.19.1'
 
+  s.add_development_dependency 'awesome_print'
+  s.add_development_dependency 'rake'
+  s.add_development_dependency 'pry'
 end

@@ -16,7 +16,23 @@ task :push do
 end
 
 task :console do
-  exec "irb -I ./lib"
+  require 'hashie'
+  require 'pry'
+  require 'rtorrent_xmlrpc'
+
+  def load_xmlrpc
+    config = Hashie::Mash.load(File.expand_path('~/.config/rtorrent_xmlrpc.conf'))
+    RTorrent::XMLRPC.new_from_hash(config)
+  end
+
+  def reload!
+    # Change 'gem_name' here too:
+    files = $LOADED_FEATURES.select { |feat| feat =~ /\/rtorrent_xmlrpc\// }
+    files.each { |file| load file }
+  end
+
+  ARGV.clear
+  Pry.start
 end
 
 task :run do

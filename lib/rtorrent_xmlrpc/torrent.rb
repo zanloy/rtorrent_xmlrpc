@@ -7,6 +7,12 @@ module RTorrent
 
   class Torrent
 
+    PRIORITIES = ['Off', 'Low', 'Normal', 'High']
+    PRIORITY_OFF = 0
+    PRIORITY_LOW = 1
+    PRIORITY_NORMAL = 2
+    PRIORITY_HIGH = 3
+
     def initialize
       @labels = []
       @files= []
@@ -21,20 +27,21 @@ module RTorrent
     end
 
     def add_labels(labels)
-      labels = [labels] if labels.is_a? String
-      self.labels = (@labels + labels).uniq
+      labels = Array(labels)
+      labels.map!(&:strip)
+      self.labels = @labels | labels
     end
 
     def remove_labels(labels)
-      labels = [labels] if labels.is_a? String
+      labels = Array(labels)
+      labels.map!(&:strip)
       self.labels = @labels - labels
     end
 
     def labels=(labels) # :nodoc:
       labels = labels.split(',') if labels.is_a? String
+      labels.map!(&:strip)
       @labels = labels
-      # Remove extra whitespace from labels
-      @labels.map!(&:strip)
     end
 
     def labels_str
@@ -51,26 +58,11 @@ module RTorrent
 
     # Return priority converted to a human readable string
     def priority_str
-      case @priority
-      when 0
-        "Off"
-      when 1
-        "Low"
-      when 2
-        "Normal"
-      when 3
-        "High"
-      else
-        "Unknown"
-      end
+      PRIORITIES[@priority]
     end
 
     def ratio=(ratio) # :nodoc:
-      begin
-        @ratio = ratio.to_f
-      rescue
-        @ratio = 0.0
-      end
+      @ratio = ratio.to_f
     end
 
     # Return hash of all values in Torrent
@@ -98,19 +90,20 @@ module RTorrent
 
     # All torrent data dumped to screen in color
     def pp(with_files = false)
-      puts "-------------- ".red
-      puts "         hash: ".blue + self.hash.green
-      puts "         name: ".blue + self.name.green
-      puts "         size: ".blue + Filesize.new(self.size).pretty.green
-      puts "   downloaded: ".blue + Filesize.new(self.down_total).pretty.green
-      puts "     uploaded: ".blue + Filesize.new(self.up_total).pretty.green
-      puts "        ratio: ".blue + self.ratio.to_s.green
-      puts "     priority: ".blue + self.priority_str.green
-      puts "       labels: ".blue + self.labels_str.green
-      puts "    completed: ".blue + self.completed.to_s.green
+      i = 12
+      puts ("-" * i).red
+      puts "%s %s" % ['hash:'.rjust(i).blue, self.hash.green]
+      puts "%s %s" % ['name:'.rjust(i).blue, self.name.green]
+      puts "%s %s" % ['size:'.rjust(i).blue, Filesize.new(self.size).pretty.green]
+      puts "%s %s" % ['downloaded:'.rjust(i).blue, Filesize.new(self.down_total).pretty.green]
+      puts "%s %s" % ['uploaded:'.rjust(i).blue, Filesize.new(self.up_total).pretty.green]
+      puts "%s %s" % ['ratio:'.rjust(i).blue, self.ratio.to_s.green]
+      puts "%s %s" % ['priority:'.rjust(i).blue, self.priority_str.green]
+      puts "%s %s" % ['labels:'.rjust(i).blue, self.labels_str.green]
+      puts "%s %s" % ['completed:'.rjust(i).blue, self.completed.to_s.green]
       if with_files
-        puts "        files: ".blue + @files.first.green
-        @files.each { |file| puts "               " + file.green unless file == @files.first }
+        puts "%s %s" % ['files:'.rjust(i).blue, @files.first.green]
+        @files.each { |file| puts "%s %s" % [' ' * i, file.green] unless file == @files.first }
       end
     end
 
@@ -119,6 +112,11 @@ module RTorrent
     # Test if torrent has a specific label
     def has_label?(label)
       @labels.include? label.to_s
+    end
+
+    # Test if torrent has any of the labels
+    def has_any_labels?(labels)
+      ! (@labels & labels).empty?
     end
 
   end

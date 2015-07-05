@@ -24,16 +24,18 @@ class RTorrent_XMLRPC < Thor
   end
 
   desc "print", "Print the torrent information"
+  option :any, aliases: '-a', type: :array
   option :complete, aliases: '-c', type: :boolean
   option :files, aliases: '-f', type: :boolean
   option :incomplete, aliases: '-i', type: :boolean
   option :json, aliases: '-j', type: :boolean
-  option :label, aliases: '-l', type: :string
+  option :labels, aliases: '-l', type: :array
   def print
     torrents = @xmlrpc.torrents
     torrents = torrents.complete if options[:complete]
     torrents = torrents.incomplete if options[:incomplete]
-    torrents = torrents.with_label options[:label] if options[:label]
+    torrents = torrents.with_labels options[:labels] if options[:labels]
+    torrents = torrents.with_any_labels options[:any] if options[:any]
     if options[:json]
       puts torrents.to_json
     else
