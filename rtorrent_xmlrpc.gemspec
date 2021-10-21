@@ -18,5 +18,5 @@ Gem::Specification.new do |s|
 
   s.add_development_dependency 'awesome_print', '~> 1.6', '>= 1.6.1'
   s.add_development_dependency 'pry', '~> 0.10', '>= 0.10.1'
-  s.add_development_dependency 'rake', '~> 10.4', '>= 10.4.2'
+  s.add_development_dependency 'rake', '~> 12.3', '>= 12.3.3'
 end
